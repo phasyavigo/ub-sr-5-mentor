@@ -1,4 +1,4 @@
-from fastapi import FastAPI,
+from fastapi import FastAPI
 from routers import mentor_chat, mentor_essay_evaluasi, mentor_pilgan_evaluasi
 
 app = FastAPI()
