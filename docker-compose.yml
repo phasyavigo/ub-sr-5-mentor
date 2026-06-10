@@ -1,0 +1,10 @@
+services:
+  tim5:
+    container_name: mentor
+    build:
+      context: .
+      dockerfile: Dockerfile
+    env_file: .env
+    ports:
+      - "127.0.0.1:8004:8004"
+    restart: unless-stopped
