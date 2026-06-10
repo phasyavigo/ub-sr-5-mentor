@@ -1,11 +1,8 @@
 from fastapi import FastAPI
-from routers import mentor_chat, mentor_essay_evaluasi, mentor_pilgan_evaluasi
+from routers import api_router
 
 app = FastAPI()
-
-app.include_router(mentor_chat.router)
-app.include_router(mentor_pilgan_evaluasi.router)
-app.include_router(mentor_essay_evaluasi.router)
+app.include_router(api_router)
 
 @app.get("/")
 def root():
