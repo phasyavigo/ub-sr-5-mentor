@@ -1,6 +1,6 @@
 import httpx
 from fastapi import HTTPException
-from ..core.config import settings
+from core.config import settings
 
 
 class MentorService():

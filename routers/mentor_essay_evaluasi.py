@@ -1,6 +1,6 @@
 from fastapi import APIRouter
-from ..src.mentor_service import MentorService
-from ..schema.mentor_schema import MentorRequest
+from src.mentor_service import MentorService
+from schema.mentor_schema import MentorRequest
 
 router = APIRouter(prefix="/essay", tags=["Mentor Essay Evaluasi Service"])
 
