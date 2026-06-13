@@ -1,28 +1,28 @@
-import os
 import httpx
 from fastapi import HTTPException
+from ..core.config import settings
+
+
 class MentorService():
     def __init__(self):
-        self.url = os.getenv("MENTOR_LLM_ENDPOINT")
-        self.model = os.getenv("MENTOR_LLM_MODEL")
+        self.url = settings.MENTOR_LLM_ENDPOINT
+        self.model = settings.MENTOR_LLM_MODEL
 
-    async def chat_response(self, chat_messages: list, payload: dict):
-        system_prompt = ''
-        # implemen function buat bikin sistem prompt chat response terserah kalian
-        # CONTOH: system_prompt_chat(payload)
-
+    async def _call_llm(self, system_prompt: str, chat_messages: list) -> dict:
+        """
+        Internal method untuk call LLM endpoint.
+        Gaperlu diubah kecuali ada perubahan pada LLM API contract.
+        """
         messages = [
             {"role": "system", "content": system_prompt},
             *chat_messages
         ]
-
         body = {
             "model": self.model,
-            "temperature": 0.7, # Ganti dulu ya
+            "temperature": 0.7,  # TODO: sesuaikan jika perlu
             "messages": messages,
-            "max_tokens": 0 # Ganti dulu ya
+            "max_tokens": 0  # TODO: sesuaikan jika perlu
         }
-
         try:
             async with httpx.AsyncClient(timeout=60) as client:
                 response = await client.post(self.url, json=body)
@@ -30,12 +30,43 @@ class MentorService():
                 result = response.json()
         except httpx.TimeoutException:
             raise HTTPException(status_code=504, detail="Mentor Tim 5 timeout")
-
-        reply = result.get("content")
+        except httpx.HTTPStatusError as e:
+            raise HTTPException(status_code=502, detail=f"LLM endpoint error: {e.response.status_code}")
+        except httpx.RequestError:
+            raise HTTPException(status_code=502, detail="Tidak bisa reach LLM endpoint")
 
         return {
             **result,
-            "reply": reply,
+            "reply": result.get("content"),
             "provider": "sr5",
             "model": self.model,
         }
+
+    """
+    Handler untuk endpoint POST /mentor_api/*.
+
+    Tim 5:
+    1. Buat function system_prompt_chat(payload) di file terpisah (misalnya system_prompts/prompts_apalah.py)
+    2. Function itu terima payload dict dan return string system prompt
+    3. Ganti string kosong di bawah dengan pemanggilan function tersebut
+
+    Contoh:
+        system_prompt = system_prompt_chat(payload)
+
+    payload berisi konteks siswa: siswa_id, sesi_id, materi, atp, level,
+    message terakhir siswa, context (emosi, bacaan, dll).
+    Gunakan field-field ini untuk menyusun system prompt yang relevan.
+    atau gunakan payload untuk konteks soal, jawaban siswa, dan level kesulitan.
+    """
+
+    async def chat_response(self, chat_messages: list, payload: dict):
+        system_prompt = ''  # TODO: ganti dengan system_prompt_chat(payload)
+        return await self._call_llm(system_prompt, chat_messages)
+
+    async def pilgan_evaluation(self, chat_messages: list, payload: dict):
+        system_prompt = ''  # TODO: ganti dengan system_prompt_pilgan(payload)
+        return await self._call_llm(system_prompt, chat_messages)
+
+    async def essay_evaluation(self, chat_messages: list, payload: dict):
+        system_prompt = ''  # TODO: ganti dengan system_prompt_essay(payload)
+        return await self._call_llm(system_prompt, chat_messages)
