@@ -6,7 +6,7 @@ router = APIRouter(prefix="/essay", tags=["Mentor Essay Evaluasi Service"])
 
 @router.post
 async def chat(request: MentorRequest):
-    return MentorService().essay_evaluation(
+    return await MentorService().essay_evaluation(
         chat_messages=[m.model_dump() for m in request.chat_messages],
         payload=request.payload.model_dump()
     )

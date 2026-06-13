@@ -6,7 +6,7 @@ router = APIRouter(prefix="/pilihan_ganda", tags=["Mentor Pilihan Ganda Evaluasi
 
 @router.post
 async def chat(request: MentorRequest):
-    return MentorService().pilgan_evaluation(
+    return await MentorService().pilgan_evaluation(
         chat_messages=[m.model_dump() for m in request.chat_messages],
         payload=request.payload.model_dump()
     )
