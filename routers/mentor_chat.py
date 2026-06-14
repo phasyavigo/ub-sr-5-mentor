@@ -4,7 +4,7 @@ from schema.mentor_schema import MentorRequest
 
 router = APIRouter(prefix="/chat", tags=["Mentor Chat Service"])
 
-@router.post
+@router.post("")
 async def chat(request: MentorRequest):
     return await MentorService().chat_response(
         chat_messages=[m.model_dump() for m in request.chat_messages],
