@@ -46,7 +46,7 @@ class MentorService():
 
         return {
             **result,
-            "reply": result.get("content"),
+            "reply": result["choices"][0]["message"]["content"],
             "provider": "sr5",
             "model": self.model,
         }
