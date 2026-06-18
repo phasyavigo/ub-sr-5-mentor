@@ -1,7 +1,13 @@
 import httpx
 from fastapi import HTTPException
 from core.config import settings
+from system_prompts.mentor_prompts import (
+    system_prompt_materi,
+    system_prompt_pilgan,
+    system_prompt_essay,
+)
 
+STOP_TOKENS = ["user", "\nuser", "<|im_end|>", "User:"]
 
 class MentorService():
     def __init__(self):
@@ -19,9 +25,12 @@ class MentorService():
         ]
         body = {
             "model": self.model,
-            "temperature": 0.7,  # TODO: sesuaikan jika perlu
+            "temperature": 0.7,
             "messages": messages,
-            "max_tokens": 0  # TODO: sesuaikan jika perlu
+            "max_tokens": 0,
+            "stop": STOP_TOKENS,
+            "frequency_penalty": 1.2,
+            "presence_penalty": 1.2,
         }
         try:
             async with httpx.AsyncClient(timeout=60) as client:
@@ -60,13 +69,13 @@ class MentorService():
     """
 
     async def chat_response(self, chat_messages: list, payload: dict):
-        system_prompt = ''  # TODO: ganti dengan system_prompt_chat(payload)
+        system_prompt = system_prompt_materi(payload)
         return await self._call_llm(system_prompt, chat_messages)
 
     async def pilgan_evaluation(self, chat_messages: list, payload: dict):
-        system_prompt = ''  # TODO: ganti dengan system_prompt_pilgan(payload)
+        system_prompt = system_prompt_pilgan(payload)
         return await self._call_llm(system_prompt, chat_messages)
 
     async def essay_evaluation(self, chat_messages: list, payload: dict):
-        system_prompt = ''  # TODO: ganti dengan system_prompt_essay(payload)
+        system_prompt = system_prompt_essay(payload)
         return await self._call_llm(system_prompt, chat_messages)
