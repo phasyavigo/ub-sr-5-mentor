@@ -27,14 +27,14 @@ class MentorService():
             "model": self.model,
             "temperature": 0.7,
             "messages": messages,
-            "max_tokens": 0,
+            "max_tokens": 1024,
             "stop": STOP_TOKENS,
             "frequency_penalty": 1.2,
             "presence_penalty": 1.2,
         }
         try:
             async with httpx.AsyncClient(timeout=60) as client:
-                response = await client.post(self.url, json=body)
+                response = await client.post(self.url, body=body)
                 response.raise_for_status()
                 result = response.json()
         except httpx.TimeoutException:
