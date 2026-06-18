@@ -1,7 +1,7 @@
 import httpx
 from fastapi import HTTPException
 from core.config import settings
-from system_prompts.mentor_prompts import (
+from .system_prompts import (
     system_prompt_materi,
     system_prompt_pilgan,
     system_prompt_essay,
